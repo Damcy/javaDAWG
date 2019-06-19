@@ -58,9 +58,8 @@ public class DawgNode implements Serializable {
     public int binarySearch(int targetCharId, ArrayList<DawgNode> nodeBuffer) {
         int low = 0;
         int high = edges.size() - 1;
-        if (targetCharId < nodeBuffer.get(edges.get(low)).charId
-            || targetCharId > nodeBuffer.get(edges.get(high)).charId
-            || low > high) {
+        if (low > high || targetCharId < nodeBuffer.get(edges.get(low)).charId
+            || targetCharId > nodeBuffer.get(edges.get(high)).charId) {
             return -2;
         }
         int middle;

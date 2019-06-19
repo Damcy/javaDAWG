@@ -2,6 +2,7 @@ import javafx.util.Pair;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Dawg implements Serializable {
@@ -122,17 +123,17 @@ public class Dawg implements Serializable {
     }
 
     public String index2word(int index) {
-        String result = "";
+        StringBuilder res = new StringBuilder();
         int tmpId = root.id;
         if (index < 0 || index > nodeBuffer.get(tmpId).wordNumber) {
-            return result;
+            return "";
         }
         while (index > 0) {
             for (int x: nodeBuffer.get(tmpId).edges) {
                 if (nodeBuffer.get(x).wordNumber < index) {
                     index -= nodeBuffer.get(x).wordNumber;
                 } else {
-                    result += (char)nodeBuffer.get(x).charId.intValue();
+                    res.append((char)nodeBuffer.get(x).charId.intValue());
                     tmpId = x;
                     if (nodeBuffer.get(tmpId).isFinal) {
                         index -= 1;
@@ -142,30 +143,37 @@ public class Dawg implements Serializable {
             }
         }
 
-        if (!nodeBuffer.get(tmpId).isFinal) {
-            return "";
-        }
-        return result;
+        return nodeBuffer.get(tmpId).isFinal ? res.toString() : "";
     }
 
-    public void save(String fileName) throws IOException {
-        ObjectOutputStream out = new ObjectOutputStream((new FileOutputStream(fileName)));
-        out.writeObject(nodeBuffer.size());
+    public void save(String fileName) {
+        try {
+            ObjectOutputStream out = new ObjectOutputStream((new FileOutputStream(fileName)));
+            out.writeObject(nodeBuffer.size());
 
-        for (DawgNode node: nodeBuffer) {
-            out.writeObject(node);
+            for (DawgNode node : nodeBuffer) {
+                out.writeObject(node);
+            }
+
+            out.close();
+        } catch (IOException e) {
+            System.out.println(Arrays.toString(e.getStackTrace()));
         }
-
-        out.close();
     }
 
-    public void load(String fileName) throws IOException, ClassNotFoundException {
-        ObjectInputStream in = new ObjectInputStream((new FileInputStream(fileName)));
-        Integer nodeSize = (Integer) in.readObject();
-        nodeBuffer = new ArrayList<DawgNode>(nodeSize);
-        for (int i = 0; i < nodeSize; ++i) {
-            nodeBuffer.add((DawgNode) in.readObject());
+    public void load(String fileName) {
+        try {
+            ObjectInputStream in = new ObjectInputStream((new FileInputStream(fileName)));
+            Integer nodeSize = (Integer) in.readObject();
+            nodeBuffer = new ArrayList<DawgNode>(nodeSize);
+            for (int i = 0; i < nodeSize; ++i) {
+                nodeBuffer.add((DawgNode) in.readObject());
+            }
+            root = nodeBuffer.get(0);
+        } catch (IOException e) {
+            System.out.println(Arrays.toString(e.getStackTrace()));
+        } catch (ClassNotFoundException e) {
+            System.out.println(Arrays.toString(e.getStackTrace()));
         }
-        root = nodeBuffer.get(0);
     }
 }
