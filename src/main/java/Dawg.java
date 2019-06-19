@@ -1,9 +1,10 @@
 import javafx.util.Pair;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Dawg {
+public class Dawg implements Serializable {
     // previous word
     private String previousWord;
 
@@ -56,13 +57,10 @@ public class Dawg {
 
         for (int i = commonPrefix; i < word.length(); ++i) {
             DawgNode newNode = new DawgNode();
-//            System.out.printf("newNode id %d\n", newNode.id);
             newNode.charId = (int)charArray[i];
-//            System.out.printf("insert process %c\n", charArray[i]);
             nodeBuffer.add(newNode);
             // insert edge into node
             nodeBuffer.get(nodeId).edges.add(newNode.id);
-//            System.out.printf("link %d to %d\n", nodeId, newNode.id);
             uncheckedNodes.add(new Pair<Integer, Integer>(nodeId, newNode.id));
             nodeId = newNode.id;
         }
@@ -85,8 +83,6 @@ public class Dawg {
             int nodeId = uncheckedNodes.get(i).getKey();
             int nextNodeId = uncheckedNodes.get(i).getValue();
             long hashKey = nodeBuffer.get(nextNodeId).toString(nodeBuffer);
-//            System.out.printf("hash map size: %d\n", minimizedNodes.size());
-//            System.out.printf("hashKey %d, containsKey %b\n", hashKey, minimizedNodes.containsKey(hashKey));
             if (minimizedNodes.containsKey(hashKey)) {
                 nodeBuffer.get(nodeId).reviseEdgePointer(nodeBuffer.get(nextNodeId).charId, minimizedNodes.get(hashKey), nodeBuffer);
                 nodeBuffer.remove(nextNodeId);
@@ -104,7 +100,6 @@ public class Dawg {
         int tmpId = root.id;
         for (char ch: charArray) {
             int charId = (int)ch;
-//            System.out.printf("process %c, now wordId %d, tmpId %d\n", ch, wordId, tmpId);
             int targetNodeId = nodeBuffer.get(tmpId).findEdge(charId, nodeBuffer);
             if (targetNodeId < 0) {
                 return targetNodeId;
@@ -151,5 +146,26 @@ public class Dawg {
             return "";
         }
         return result;
+    }
+
+    public void save(String fileName) throws IOException {
+        ObjectOutputStream out = new ObjectOutputStream((new FileOutputStream(fileName)));
+        out.writeObject(nodeBuffer.size());
+
+        for (DawgNode node: nodeBuffer) {
+            out.writeObject(node);
+        }
+
+        out.close();
+    }
+
+    public void load(String fileName) throws IOException, ClassNotFoundException {
+        ObjectInputStream in = new ObjectInputStream((new FileInputStream(fileName)));
+        Integer nodeSize = (Integer) in.readObject();
+        nodeBuffer = new ArrayList<DawgNode>(nodeSize);
+        for (int i = 0; i < nodeSize; ++i) {
+            nodeBuffer.add((DawgNode) in.readObject());
+        }
+        root = nodeBuffer.get(0);
     }
 }
