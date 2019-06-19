@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class DawgTest {
 
@@ -11,27 +12,21 @@ public class DawgTest {
         InputStreamReader reader = new InputStreamReader(new FileInputStream(file));
         BufferedReader br = new BufferedReader(reader);
         String line;
-        int cnt = 1;
-        HashMap<String, Integer> map = new HashMap<String, Integer>();
         while ((line = br.readLine()) != null) {
-            if (map.containsKey(line)) {
-                continue;
-            }
             dawg.insert(line);
-            map.put(line, cnt);
-            cnt += 1;
         }
         reader.close();
         dawg.finish();
 
-        dawg.save("/Users/Damcy/github/dawg/src/main/resources/test.bin");
+        dawg.save("./test.bin");
     }
 
 
     public static void testLoad() throws IOException, ClassNotFoundException {
         Dawg dawg = new Dawg();
-        dawg.load("/Users/Damcy/github/dawg/src/main/resources/test.bin");
-
+        dawg.load("./test.bin");
+//        Scanner sc =new Scanner(System.in);
+//        String s = sc.next();
         String fileName = DawgTest.class.getResource("dict.txt").getPath();
         File file = new File(fileName);
         InputStreamReader reader = new InputStreamReader(new FileInputStream(file));
@@ -106,7 +101,33 @@ public class DawgTest {
     }
 
 
+    public static void generalMap() throws IOException {
+        String fileName = DawgTest.class.getResource("dict.txt").getPath();
+        File file = new File(fileName);
+        InputStreamReader reader = new InputStreamReader(new FileInputStream(file));
+        BufferedReader br = new BufferedReader(reader);
+        String line;
+        int cnt = 1;
+        HashMap<String, Integer> map = new HashMap<String, Integer>();
+        HashMap<Integer, String> map2 = new HashMap<Integer, String>();
+        while ((line = br.readLine()) != null) {
+            if (map.containsKey(line)) {
+                continue;
+            }
+            map.put(line, cnt);
+            map2.put(cnt, line);
+            cnt += 1;
+        }
+        reader.close();
+
+        Scanner sc =new Scanner(System.in);
+        String s = sc.next();
+    }
+
+
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        testLoad();
+//        testLoad();
+//        generalMap();
+        dawgTest();
     }
 }
