@@ -106,7 +106,7 @@ public class Dawg implements Serializable {
                 return targetNodeId;
             }
             for (int x: nodeBuffer.get(tmpId).edges) {
-                if (nodeBuffer.get(x).charId == charId) {
+                if (targetNodeId == x) {
                     if (nodeBuffer.get(tmpId).isFinal) {
                         wordId += 1;
                     }
