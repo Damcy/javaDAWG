@@ -4,6 +4,6 @@ javaDAWG is a java module implements DAWG graph structure, which allow to store 
 
 ### Usage
 
-all the methed can be find in the ```src/test/java/DawgTest.java```
+all the methods can be find in the ```src/test/java/DawgTest.java```
 
 It is recommended to use ```dawg.save()``` to serialize the object, and use ```dawg.load()``` when data is needed.
