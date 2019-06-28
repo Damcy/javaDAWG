@@ -138,8 +138,8 @@ public class DawgTest {
         HashMap<Integer, String> map2 = new HashMap<Integer, String>();
         loadDict(map, map2);
 
-        long start = 0;
-        long end = 0;
+        long start;
+        long end;
 
         System.out.println("start testing dawg ...");
         start = System.currentTimeMillis();

@@ -98,9 +98,8 @@ public class Dawg implements Serializable {
     public int word2index(String word) {
         char[] charArray = word.toCharArray();
         int wordId = 0;
-        int tmpId = root.id;
-        for (char ch: charArray) {
-            int charId = (int)ch;
+        int tmpId = 0;
+        for (int charId: charArray) {
             int targetNodeId = nodeBuffer.get(tmpId).findEdge(charId, nodeBuffer);
             if (targetNodeId < 0) {
                 return targetNodeId;
@@ -124,26 +123,28 @@ public class Dawg implements Serializable {
 
     public String index2word(int index) {
         StringBuilder res = new StringBuilder();
-        int tmpId = root.id;
-        if (index < 0 || index > nodeBuffer.get(tmpId).wordNumber) {
+        int tmpId = 0;
+        DawgNode tmp = nodeBuffer.get(tmpId);
+        if (index > tmp.wordNumber) {
             return "";
         }
         while (index > 0) {
             for (int x: nodeBuffer.get(tmpId).edges) {
-                if (nodeBuffer.get(x).wordNumber < index) {
-                    index -= nodeBuffer.get(x).wordNumber;
+                tmp = nodeBuffer.get(x);
+                if (tmp.wordNumber < index) {
+                    index -= tmp.wordNumber;
                 } else {
-                    res.append((char)nodeBuffer.get(x).charId.intValue());
-                    tmpId = x;
-                    if (nodeBuffer.get(tmpId).isFinal) {
+                    res.append((char)tmp.charId.intValue());
+                    if (tmp.isFinal) {
                         index -= 1;
                     }
+                    tmpId = x;
                     break;
                 }
             }
         }
 
-        return nodeBuffer.get(tmpId).isFinal ? res.toString() : "";
+        return tmp.isFinal ? res.toString() : "";
     }
 
     public void save(String fileName) {
